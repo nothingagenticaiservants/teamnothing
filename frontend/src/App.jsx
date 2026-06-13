@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import Header from "./components/header";
 import ResultCard from "./components/ResultCard";
 import ThemeToggle from "./components/ThemeToggle";
 import Dashboard from "./pages/Dashboard";
