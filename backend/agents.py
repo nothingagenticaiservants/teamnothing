@@ -1,8 +1,13 @@
 import os
+from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, LLM
 
-os.environ["GEMINI_API_KEY"] = "AQ.Ab8RN6LlwVWDopgnaWIfn_P2cKYHEyrWzpBQMPmWH-65Flz6dQ"
+load_dotenv()
 
+llm = LLM(
+    model="gemini/gemini-2.5-flash",
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 llm = LLM(
     model="gemini/gemini-2.5-flash",
     api_key=os.environ["GEMINI_API_KEY"]
