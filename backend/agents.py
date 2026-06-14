@@ -8,11 +8,6 @@ llm = LLM(
     model="gemini/gemini-2.5-flash",
     api_key=os.getenv("GEMINI_API_KEY")
 )
-llm = LLM(
-    model="gemini/gemini-2.5-flash",
-    api_key=os.environ["GEMINI_API_KEY"]
-)
-
 def run_exam_agent(subject: str, days: int,
                    priority: str, study_mode: str):
 
@@ -46,6 +41,7 @@ Create:
             tasks=[task]
         ).kickoff()
     )
+def run_attendance_agent(attendance_percent: float):
     agent = Agent(role="Attendance Advisor", goal="Monitor attendance and predict shortage risk",
         backstory="Expert in student attendance management", llm=llm)
     task = Task(description=f"Student attendance is {attendance_percent}%. Predict risk and give advice.",
@@ -60,12 +56,6 @@ def run_performance_agent(marks: dict):
         expected_output="Academic performance report", agent=agent)
     return str(Crew(agents=[agent], tasks=[task]).kickoff())
 
-def run_exam_agent(subject: str, days: int):
-    agent = Agent(role="Exam Coach", goal="Create personalized study plans",
-        backstory="Expert exam preparation mentor", llm=llm)
-    task = Task(description=f"{subject} exam in {days} days. Create a detailed study plan.",
-        expected_output="Study plan", agent=agent)
-    return str(Crew(agents=[agent], tasks=[task]).kickoff())
 
 def run_doubt_agent(question: str,
                      subject: str,
@@ -100,48 +90,40 @@ Use examples whenever possible.
             tasks=[task]
         ).kickoff()
     )
-    agent = Agent(role="Subject Expert", goal="Answer student doubts clearly",
-        backstory="Expert tutor for technical subjects", llm=llm)
-    task = Task(description=question, expected_output="Detailed explanation", agent=agent)
-    return str(Crew(agents=[agent], tasks=[task]).kickoff())
-
-def run_placement_agent(months: int,
-                        focus_areas: list):
-
+   
+def run_placement_agent(months: int, focus_areas: list = None):
+    if not focus_areas:
+        focus_areas = ["DSA", "System Design", "HR Interview"]
+    
+    focus_str = ", ".join(focus_areas)
+    
     agent = Agent(
         role="Placement Mentor",
-        goal="Prepare students for placements",
-        backstory="Industry interview mentor",
-        llm=llm
+        goal="Prepare students for campus placements with detailed roadmaps",
+        backstory="Expert industry mentor with 10+ years of experience in campus recruitment, DSA coaching, and interview preparation",
+        llm=llm,
+        verbose=False
     )
-
     task = Task(
         description=f"""
-Placement drive in {months} months.
-
-Focus Areas:
-{", ".join(focus_areas)}
-
-Create:
-1. Weekly roadmap
-2. Resource recommendations
-3. Mock interview strategy
-4. Time allocation.
-""",
-        expected_output="Placement roadmap",
+        Create a detailed {months}-month placement preparation roadmap for an engineering student.
+        
+        Focus Areas selected by student: {focus_str}
+        Time Available: {months} months
+        
+        Provide:
+        1. Week-by-week study plan for all {months} months
+        2. Specific topics to cover for each focus area: {focus_str}
+        3. Resources and practice platforms
+        4. Daily time allocation
+        5. Mock interview schedule
+        6. Key milestones to track progress
+        
+        Be very specific and detailed with actionable steps.
+        """,
+        expected_output=f"A complete {months}-month placement preparation roadmap with week-by-week breakdown covering {focus_str}",
         agent=agent
     )
-
-    return str(
-        Crew(
-            agents=[agent],
-            tasks=[task]
-        ).kickoff()
-    )
-    agent = Agent(role="Placement Mentor", goal="Prepare students for placements",
-        backstory="Industry interview and DSA mentor", llm=llm)
-    task = Task(description=f"Placement drive in {months} months. Create a complete DSA + interview roadmap.",
-        expected_output="Placement preparation roadmap", agent=agent)
     return str(Crew(agents=[agent], tasks=[task]).kickoff())
 
 def run_notes_agent(pdf_text: str, query: str):

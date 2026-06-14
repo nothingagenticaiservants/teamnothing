@@ -4,13 +4,10 @@ export async function askAttendance(attendance) {
   const res = await fetch(`${BASE}/attendance`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      attendance: Number(attendance),
-    }),
+    body: JSON.stringify({ attendance: Number(attendance) }),
   });
-
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).result;
 }
 
 export async function askPerformance(marks) {
@@ -19,73 +16,63 @@ export async function askPerformance(marks) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ marks }),
   });
-
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).result;
 }
 
-export async function askExam(subject, days, priority, studyMode) {
+export async function askExam(subject, days, priority, study_mode) {
   const res = await fetch(`${BASE}/exam`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       subject,
       days: Number(days),
-      priority,
-      study_mode: studyMode,
+      priority: priority || "Medium",
+      study_mode: study_mode || "Mixed",
     }),
   });
-
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).result;
 }
 
 export async function askDoubt(question, subject, difficulty) {
   const res = await fetch(`${BASE}/doubt`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       question,
-      subject,
-      difficulty,
+      subject: subject || "General",
+      difficulty: difficulty || "Beginner",
     }),
   });
-
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).result;
 }
 
-export async function askPlacement(months, focusAreas) {
+export async function askPlacement(months, focus_areas) {
   const res = await fetch(`${BASE}/placement`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       months: Number(months),
-      focus_areas: focusAreas,
+      focus_areas: focus_areas && focus_areas.length > 0
+        ? focus_areas
+        : ["DSA", "System Design"],
     }),
   });
-
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).result;
 }
 
 export async function uploadNotes(file, query) {
+  if (!file) throw new Error("Please select a PDF file first!");
   const form = new FormData();
-
   form.append("file", file);
-  form.append("query", query);
-
+  form.append("query", query || "Summarize this document");
   const res = await fetch(`${BASE}/notes`, {
     method: "POST",
     body: form,
   });
-
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).result;
 }
