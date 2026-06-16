@@ -5,7 +5,4 @@ litellm
 google-genai
 pypdf
 python-multipart
-langchain
-langchain-openai
-langchain-community
 python-dotenv
