@@ -1,6 +1,6 @@
 ﻿fastapi
 uvicorn
-crewai>=1.0.0
+crewai==1.14.6
 litellm
 google-genai
 pypdf
